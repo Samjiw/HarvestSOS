@@ -1,0 +1,1351 @@
+<title>HARVEST SOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;1,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── Tokens (dark-committed design — emergency ops aesthetic) ── */
+:root {
+  --bg:       #05080C;
+  --surf:     #0D1520;
+  --surf2:    #131D2A;
+  --border:   #1C2B3A;
+  --red:      #E03040;
+  --red-glow: rgba(224,48,64,0.18);
+  --red-dim:  rgba(224,48,64,0.07);
+  --red-2:    #8B1E28;
+  --green:    #00C97A;
+  --green-dim:rgba(0,201,122,0.1);
+  --amber:    #FF9200;
+  --text:     #D4E2EE;
+  --mid:      #849AAD;
+  --muted:    #4E6070;
+  --fd: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --fb: 'DM Sans', system-ui, sans-serif;
+  --fm: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: var(--fb);
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--bg);
+}
+
+/* ── Grid backdrop on every slide ── */
+.slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6vh max(20px, 6vw);
+  overflow: hidden;
+}
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(28,43,58,0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28,43,58,0.35) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+.slide > * { position: relative; z-index: 1; }
+
+/* ── Fixed UI ── */
+.nav-dots {
+  position: fixed;
+  right: max(14px, 1.5vw);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 200;
+}
+.nd {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.nd.on {
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red);
+  transform: scale(1.8);
+}
+
+.prog {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red-2), var(--red));
+  box-shadow: 0 0 10px var(--red);
+  width: 0%;
+  transition: width 0.3s;
+  z-index: 200;
+}
+
+.sysbar {
+  position: fixed;
+  top: 8px; right: max(50px,4vw);
+  font-family: var(--fm);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  z-index: 200;
+  display: flex;
+  gap: 20px;
+}
+.sysbar span.live { color: var(--green); }
+
+/* ── Typography helpers ── */
+.eyebrow {
+  font-family: var(--fm);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.tag {
+  display: inline-block;
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red);
+  background: var(--red-dim);
+  border: 1px solid rgba(224,48,64,0.25);
+  padding: 2px 8px;
+  border-radius: 1px;
+}
+
+.tag.green {
+  color: var(--green);
+  background: var(--green-dim);
+  border-color: rgba(0,201,122,0.25);
+}
+
+/* ── SLIDE 1 — HERO ── */
+#s1 { min-height: 100vh; justify-content: center; }
+
+.hero-wrap {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 6vw;
+  align-items: center;
+}
+
+.hero-title {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: clamp(72px, 13vw, 200px);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.hero-title .sos {
+  color: var(--red);
+  text-shadow: 0 0 60px rgba(224,48,64,0.35);
+  display: block;
+}
+.hero-sub {
+  font-family: var(--fd);
+  font-weight: 600;
+  font-size: clamp(14px,1.8vw,22px);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--mid);
+  margin-top: 16px;
+}
+
+.hero-q {
+  margin-top: 28px;
+  border-left: 3px solid var(--red);
+  padding: 16px 20px;
+  background: var(--surf);
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.65;
+}
+.hero-q strong {
+  display: block;
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+.hero-q em {
+  font-style: normal;
+  color: var(--text);
+}
+
+.hero-meta {
+  margin-top: 24px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* beacon */
+.beacon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  max-width: 380px;
+  margin: 0 auto;
+  position: relative;
+}
+.beacon-core {
+  width: 18px; height: 18px;
+  background: var(--red);
+  border-radius: 50%;
+  box-shadow: 0 0 24px var(--red), 0 0 60px rgba(224,48,64,0.35);
+  position: relative; z-index: 2;
+  flex-shrink: 0;
+}
+.ring {
+  position: absolute;
+  border: 1.5px solid var(--red);
+  border-radius: 50%;
+  animation: beacon 3.6s ease-out infinite;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  opacity: 0;
+}
+.ring:nth-child(2) { animation-delay: 0s; }
+.ring:nth-child(3) { animation-delay: 1.2s; }
+.ring:nth-child(4) { animation-delay: 2.4s; }
+
+@keyframes beacon {
+  0%   { width:18px;  height:18px;  opacity:0.9; }
+  100% { width:340px; height:340px; opacity:0;   }
+}
+
+.beacon-label {
+  position: absolute;
+  bottom: 12px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--fm);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--fm);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  z-index: 1;
+}
+.scroll-hint::after {
+  content: '';
+  display: block;
+  width: 1px;
+  height: 24px;
+  background: linear-gradient(var(--muted), transparent);
+  margin: 8px auto 0;
+}
+
+/* ── SLIDE 2 — PROBLEM ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+  margin: 24px 0;
+}
+.stat {
+  background: var(--surf);
+  padding: 28px 24px;
+}
+.stat:first-child { border-top: 3px solid var(--red); }
+.stat:nth-child(2) { border-top: 3px solid var(--red-2); }
+.stat:nth-child(3) { border-top: 3px solid var(--amber); }
+
+.stat-n {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: clamp(36px,5.5vw,72px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat:nth-child(3) .stat-n { color: var(--amber); }
+.stat-d {
+  font-size: 12px;
+  color: var(--mid);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.prob-body {
+  max-width: 780px;
+  font-size: 15px;
+  color: var(--mid);
+  line-height: 1.7;
+}
+.prob-body strong { color: var(--text); }
+
+/* ── SLIDE 3 — PRODUCT ── */
+.inno-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 28px;
+}
+.inno {
+  background: var(--surf);
+  padding: 32px 28px;
+}
+.inno.b { background: #0B1018; }
+.inno-n {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 52px;
+  color: var(--red);
+  opacity: 0.2;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.inno-title {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: clamp(17px,2.2vw,24px);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.inno-body {
+  font-size: 13px;
+  color: var(--mid);
+  line-height: 1.6;
+}
+.inno-metric {
+  margin-top: 18px;
+  font-family: var(--fm);
+  font-size: 10px;
+  color: var(--red);
+  letter-spacing: 0.08em;
+}
+
+/* ── SLIDE 4 — ENGINEERING QUESTION ── */
+.eq-title {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: clamp(22px,4vw,58px);
+  line-height: 1.05;
+  max-width: 860px;
+  text-wrap: balance;
+  margin: 20px 0 36px;
+}
+.eq-title em { font-style: normal; color: var(--red); }
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+}
+.mode {
+  background: var(--surf);
+  padding: 24px 22px;
+}
+.mode.hl {
+  background: var(--red-dim);
+  border: 1px solid rgba(224,48,64,0.22);
+}
+.mode-lbl {
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.mode-name {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.mode.hl .mode-name { color: var(--red); }
+.mode-desc { font-size: 12px; color: var(--mid); line-height: 1.5; }
+.mode-out {
+  margin-top: 14px;
+  font-family: var(--fm);
+  font-size: 10px;
+  color: var(--muted);
+}
+.mode.hl .mode-out { color: var(--red); }
+
+.hyp {
+  margin-top: 24px;
+  padding: 14px 20px;
+  background: var(--surf);
+  border-left: 3px solid var(--green);
+  font-size: 13px;
+  color: var(--mid);
+  font-style: italic;
+}
+.hyp strong { color: var(--green); font-style: normal; }
+
+/* ── SLIDE 5 — OPTIMISATION STACK ── */
+.opt-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 24px;
+}
+.opt-row {
+  display: grid;
+  grid-template-columns: 44px 200px 1fr 110px;
+  background: var(--surf);
+}
+.opt-row > * { padding: 18px 20px; }
+.opt-num {
+  background: var(--surf2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--muted);
+  border-right: 1px solid var(--border);
+  padding: 0;
+}
+.opt-name-cell {
+  border-right: 1px solid var(--border);
+}
+.opt-name {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 17px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+.opt-component {
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.opt-desc {
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.5;
+  border-right: 1px solid var(--border);
+}
+.opt-gain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 26px;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+
+.opt-total {
+  background: var(--red);
+  grid-template-columns: 44px 200px 1fr 110px;
+  gap: 0;
+}
+.opt-total .opt-num { background: rgba(0,0,0,0.2); color: white; }
+.opt-total .opt-name { color: white; font-size: 20px; }
+.opt-total .opt-component { color: rgba(255,255,255,0.6); }
+.opt-total .opt-desc { border-right: none; color: rgba(255,255,255,0.8); }
+.opt-total .opt-gain { font-size: 32px; color: white; }
+
+.why-passive {
+  margin-top: 16px;
+  padding: 14px 20px;
+  background: var(--surf2);
+  border-left: 3px solid var(--amber);
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.6;
+}
+.why-passive strong { color: var(--amber); }
+
+/* ── SLIDE 6 — HOW IT WORKS ── */
+.hw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3vw;
+  margin-top: 24px;
+  align-items: start;
+}
+.hw-label {
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 10px;
+}
+.hw-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.hw-tbl th {
+  background: var(--surf2);
+  color: var(--muted);
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  text-align: left;
+  font-weight: 500;
+}
+.hw-tbl td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--mid);
+  vertical-align: top;
+  line-height: 1.4;
+}
+.hw-tbl tr:last-child td { border-bottom: none; }
+.hw-tbl td:first-child { color: var(--text); font-weight: 500; width: 38%; }
+.hw-tbl .val {
+  font-family: var(--fm);
+  font-size: 10px;
+  color: var(--green);
+  white-space: nowrap;
+}
+.hw-note {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--surf2);
+  border-left: 2px solid var(--amber);
+  font-size: 11px;
+  color: var(--mid);
+  line-height: 1.5;
+}
+.hw-note strong { color: var(--amber); }
+
+/* ── SLIDE 7 — STEMMB ── */
+.stemmb {
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  gap: 2px;
+  margin-top: 24px;
+}
+.stemmb-card {
+  background: var(--surf);
+  padding: 18px 14px;
+}
+.stemmb-l {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 40px;
+  color: var(--red);
+  opacity: 0.2;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stemmb-n {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.stemmb-d {
+  font-size: 11px;
+  color: var(--mid);
+  line-height: 1.5;
+}
+
+/* ── SLIDE 8 — IMPACT ── */
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3vw;
+  margin-top: 24px;
+  align-items: start;
+}
+.audience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.aud {
+  background: var(--surf);
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+.aud-i {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--red);
+  line-height: 1.2;
+}
+.aud-name {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+.aud-d { font-size: 11px; color: var(--mid); line-height: 1.4; }
+
+.sdg-list { display: flex; flex-direction: column; gap: 2px; }
+.sdg {
+  background: var(--surf);
+  padding: 12px 18px;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+.sdg-n {
+  font-family: var(--fm);
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 500;
+}
+.sdg-d { font-size: 11px; color: var(--mid); line-height: 1.4; }
+
+/* ── SLIDE 9 — PROTOTYPE ── */
+.phases {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 2px;
+  margin-top: 24px;
+}
+.phase {
+  background: var(--surf);
+  padding: 26px 22px;
+  border-top: 3px solid var(--border);
+}
+.phase.focus { border-top-color: var(--red); }
+.phase-lbl {
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.phase-title {
+  font-family: var(--fd);
+  font-weight: 700;
+  font-size: 19px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+.phase ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.phase li {
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.45;
+  padding-left: 14px;
+  position: relative;
+}
+.phase li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+  font-family: var(--fm);
+}
+.phase-metric {
+  margin-top: 18px;
+  padding: 9px 12px;
+  background: var(--surf2);
+  font-family: var(--fm);
+  font-size: 9px;
+  color: var(--green);
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+}
+
+/* ── SLIDE 10 — BUSINESS ── */
+.bm-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 24px;
+}
+.bm-row {
+  background: var(--surf);
+  padding: 18px 22px;
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+.bm-k {
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 2px;
+}
+.bm-v { font-size: 13px; color: var(--text); line-height: 1.5; }
+.bm-v strong { color: var(--red); }
+
+.market-callout {
+  grid-column: 1 / -1;
+  background: var(--red-dim);
+  border: 1px solid rgba(224,48,64,0.2);
+  padding: 20px 24px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.market-big {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 52px;
+  color: var(--red);
+  line-height: 1;
+  white-space: nowrap;
+}
+.market-desc { font-size: 13px; color: var(--mid); line-height: 1.65; }
+
+/* ── SLIDE 11 — CLOSING ── */
+#s11 {
+  text-align: center;
+  align-items: center;
+  background: var(--surf);
+}
+.close-title {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: clamp(40px, 8.5vw, 128px);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+.close-title .red { color: var(--red); }
+.close-sub {
+  font-family: var(--fd);
+  font-weight: 600;
+  font-size: clamp(13px,1.8vw,20px);
+  color: var(--mid);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 14px;
+  margin-bottom: 48px;
+}
+.close-facts {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.cf {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.cf-n {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 36px;
+  color: var(--text);
+}
+.cf-l {
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.est-note {
+  margin-top: 32px;
+  font-family: var(--fm);
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+}
+
+/* ── Animate-in ── */
+.ai {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.ai.vis { opacity: 1; transform: translateY(0); }
+
+/* ── Section title ── */
+.s-title {
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: clamp(28px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+.s-title .red { color: var(--red); }
+
+/* ── Responsive ── */
+@media (max-width: 820px) {
+  .hero-wrap { grid-template-columns: 1fr; }
+  .beacon-wrap { display: none; }
+  .inno-grid, .modes, .phases, .hw-grid, .impact-grid, .bm-wrap { grid-template-columns: 1fr; }
+  .stemmb { grid-template-columns: repeat(3,1fr); }
+  .stat-row { grid-template-columns: 1fr; }
+  .opt-row { grid-template-columns: 40px 1fr 90px; }
+  .opt-desc { display: none; }
+  .nav-dots { display: none; }
+}
+@media (max-width: 480px) {
+  .stemmb { grid-template-columns: repeat(2,1fr); }
+  .close-facts { gap: 20px; }
+}
+</style>
+
+<!-- ── Fixed chrome ── -->
+<div class="prog" id="prog"></div>
+<div class="nav-dots" id="navdots"></div>
+<div class="sysbar">
+  <span>HARVEST/SOS</span>
+  <span class="live" id="clock">██:██:██</span>
+</div>
+
+<!-- ════════════════════ SLIDE 1 — HERO ════════════════════ -->
+<section class="slide" id="s1">
+  <div class="hero-wrap">
+    <div>
+      <div class="eyebrow">Imperial College STEMathon India 2026</div>
+      <div class="hero-title">
+        HARVEST
+        <span class="sos">SOS</span>
+      </div>
+      <div class="hero-sub">Adaptive Wearable Energy for Disaster Response</div>
+
+      <div class="hero-q ai">
+        <strong>Core Engineering Question</strong>
+        Can <em>adaptive multi-source energy harvesting</em> extend the operating capability of an <em>infrastructure-independent SOS wearable</em> beyond what any single source or passive combination achieves?
+      </div>
+
+      <div class="hero-meta ai" style="animation-delay:0.1s">
+        <span class="tag">No cellular dependency</span>
+        <span class="tag">Reduced external charging</span>
+        <span class="tag">Off-the-shelf BOM ~₹3,500</span>
+      </div>
+    </div>
+
+    <div class="beacon-wrap" aria-hidden="true">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="beacon-core"></div>
+      <div class="beacon-label">865 MHz LORA MESH BEACON</div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- ════════════════════ SLIDE 2 — PROBLEM ════════════════════ -->
+<section class="slide" id="s2">
+  <div class="eyebrow">The Problem</div>
+  <div class="s-title">When disaster strikes, <span class="red">communication dies.</span></div>
+
+  <div class="stat-row ai">
+    <div class="stat">
+      <div class="stat-n" data-target="350000" data-suffix="+">0</div>
+      <div class="stat-d">disaster deaths annually — most preventable with faster location data (UNDRR 2023)</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n" style="color:var(--red-2);">72 hrs</div>
+      <div class="stat-d">critical survival window after a disaster event — location data is decisive in this window</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">100%</div>
+      <div class="stat-d">cell tower failure rate in major disasters — smartphones become dead weight</div>
+    </div>
+  </div>
+
+  <p class="prob-body ai">
+    Cell towers collapse. <strong>GPS handhelds run out of charge within hours.</strong> Rescue teams enter rubble-filled zones with no communication layer and no way to locate survivors. The survivors who could signal — can't. The gap isn't the rescue technology. It's <strong>power and connectivity when infrastructure is gone.</strong>
+  </p>
+</section>
+
+<!-- ════════════════════ SLIDE 3 — PRODUCT ════════════════════ -->
+<section class="slide" id="s3">
+  <div class="eyebrow">The Product</div>
+  <div class="s-title">One wristband. <span class="red">Two core innovations.</span></div>
+  <p style="color:var(--mid);font-size:13px;margin-top:6px;max-width:680px;">HARVEST SOS harvests energy from four body-ambient sources simultaneously and uses it to power an infrastructure-independent emergency beacon — no cell towers, no satellite subscription, no external charging needed.</p>
+
+  <div class="inno-grid ai">
+    <div class="inno">
+      <div class="inno-n">①</div>
+      <div class="inno-title">Adaptive Energy Management</div>
+      <div class="inno-body">A microcontroller (STM32L0) polls four harvesting sources — kinetic, thermoelectric, photovoltaic, and piezoelectric — every 500 ms and dynamically routes power from whichever active combination is producing most. Individual MPPT per source prevents losses from passive combining.</div>
+      <div class="inno-metric">EST. OUTPUT: 3–52 mW (scenario-dependent)</div>
+    </div>
+    <div class="inno b">
+      <div class="inno-n">②</div>
+      <div class="inno-title">Mesh-Relay Emergency Beacon</div>
+      <div class="inno-body">Instead of Bluetooth (10 m range), HARVEST transmits GPS coordinates or a device-ID distress signal on 865 MHz LoRa. Each unit also auto-relays packets from other HARVEST units in range — building an ad-hoc rescue mesh with no towers. GPS-lock lost (e.g. underground)? Falls back to ID-only broadcast automatically.</div>
+      <div class="inno-metric">EST. RANGE: 2–15 km/hop · POWER: ~0.8 mW avg</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 4 — ENG QUESTION ════════════════════ -->
+<section class="slide" id="s4">
+  <div class="eyebrow">The Engineering Investigation</div>
+
+  <div class="eq-title">
+    Can <em>adaptive</em> harvesting outperform<br>
+    single-source <em>and</em> passive combination?
+  </div>
+
+  <div class="modes ai">
+    <div class="mode">
+      <div class="mode-lbl">Mode A — Baseline</div>
+      <div class="mode-name">Single Best Source</div>
+      <div class="mode-desc">Only the highest-yielding source connected. All others off. Represents what conventional single-technology wearables achieve.</div>
+      <div class="mode-out">Expected: ~3–30 mW (est.)</div>
+    </div>
+    <div class="mode">
+      <div class="mode-lbl">Mode B — Naive Multi</div>
+      <div class="mode-name">Passive Sum</div>
+      <div class="mode-desc">All 4 sources on a shared rail, no MPPT, no gating. The naive approach — should outperform A, but loses energy to MPP mismatch and backflow.</div>
+      <div class="mode-out">Expected: ~5–35 mW (est.) — wastes 20–40%</div>
+    </div>
+    <div class="mode hl">
+      <div class="mode-lbl">Mode C — HARVEST</div>
+      <div class="mode-name">Adaptive System</div>
+      <div class="mode-desc">ADP5092 PMIC per source, STM32L0 polling, dynamic gating, and load routing active. Individual MPPT + backflow prevention + condition-aware switching.</div>
+      <div class="mode-out">Target: ≥25% gain over Mode B — prototype decides</div>
+    </div>
+  </div>
+
+  <div class="hyp ai">
+    <strong>Hypothesis:</strong> Mode C outperforms both A and B in every condition, with the largest gap in mixed or changing environments. We don't pre-fix the percentage — <strong>the prototype data determines whether the gain is 10%, 25%, or more.</strong>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 5 — OPT STACK ════════════════════ -->
+<section class="slide" id="s5">
+  <div class="eyebrow">Why Optimisation Works — The Three-Layer Stack</div>
+  <div class="s-title">Each layer captures <span class="red">losses the previous one misses.</span></div>
+
+  <div class="opt-stack ai">
+    <div class="opt-row">
+      <div class="opt-num">1</div>
+      <div class="opt-name-cell">
+        <div class="opt-name">Per-Source MPPT</div>
+        <div class="opt-component">ADP5092 × 4</div>
+      </div>
+      <div class="opt-desc">Each harvester has its own Power Management IC performing Maximum Power Point Tracking — continuously sweeping voltage to find the peak of the P-V curve. The source operates at its theoretical maximum regardless of load variation, instead of being dragged off-peak by a shared bus.</div>
+      <div class="opt-gain">+20–35%</div>
+    </div>
+    <div class="opt-row">
+      <div class="opt-num">2</div>
+      <div class="opt-name-cell">
+        <div class="opt-name">Backflow Gating</div>
+        <div class="opt-component">STM32L0 + N-FET gates</div>
+      </div>
+      <div class="opt-desc">STM32L0 polls each source's output every 500 ms. Any source below its forward-voltage threshold is switched off at its N-FET gate. This prevents weak sources from becoming reverse loads — a real, measurable loss mechanism in passive multi-source circuits that is invisible until you measure it.</div>
+      <div class="opt-gain">+5–15%</div>
+    </div>
+    <div class="opt-row">
+      <div class="opt-num">3</div>
+      <div class="opt-name-cell">
+        <div class="opt-name">Dynamic Load Routing</div>
+        <div class="opt-component">STM32L0 firmware</div>
+      </div>
+      <div class="opt-desc">When conditions shift — cloud covers sun, wearer stops walking — the controller re-ranks sources by live output and re-routes the SOS module's power draw to the strongest active combination. No source carries load beyond its capacity; no surplus source sits idle while the system starves.</div>
+      <div class="opt-gain">+5–10%</div>
+    </div>
+    <div class="opt-row opt-total">
+      <div class="opt-num">Σ</div>
+      <div class="opt-name-cell">
+        <div class="opt-name">Combined Adaptive System</div>
+        <div class="opt-component">All three layers active</div>
+      </div>
+      <div class="opt-desc" style="border:none;">MPPT extracts each source's peak → gating prevents all backflow losses → dynamic routing keeps the strongest source under load at all times</div>
+      <div class="opt-gain">+25–40% est.</div>
+    </div>
+  </div>
+
+  <div class="why-passive ai">
+    <strong>Why passive combining alone fails:</strong> On a shared rail, bus voltage is set by the strongest source. Every weaker source sees a forward voltage above its output — it stops contributing or reverses. Passive sum sounds additive. In practice it discards up to 40–60% of theoretical yield.
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 6 — HOW IT WORKS ════════════════════ -->
+<section class="slide" id="s6">
+  <div class="eyebrow">Technical Specification</div>
+  <div class="s-title">Base unit + <span class="red">SOS module.</span></div>
+
+  <div class="hw-grid ai">
+    <div>
+      <div class="hw-label">Base Unit — Energy Generation</div>
+      <table class="hw-tbl">
+        <thead><tr><th>Source</th><th>Mechanism</th><th class="val">Est. Output</th></tr></thead>
+        <tbody>
+          <tr><td>Electromagnetic Kinetic</td><td>Wrist motion → coil-magnet induction</td><td class="val">2–10 mW</td></tr>
+          <tr><td>Thermoelectric (Seebeck)</td><td>Skin-to-air ΔT ~10 °C → Peltier module</td><td class="val">0.1–0.8 mW</td></tr>
+          <tr><td>Photovoltaic</td><td>Flexible solar cells, ~15 cm², outer band</td><td class="val">0.5–40 mW</td></tr>
+          <tr><td>Piezoelectric</td><td>Bending/compression of wristband material</td><td class="val">0.05–1 mW</td></tr>
+        </tbody>
+      </table>
+      <div class="hw-note" style="margin-top:10px">
+        <strong>Storage:</strong> 400 mAh LiPo (long-term) + 1 F supercapacitor (burst buffer for LoRa pulses). Pre-charged at deployment — adds ~72 hr reserve even at minimum harvest.
+      </div>
+    </div>
+
+    <div>
+      <div class="hw-label">SOS Module — Emergency Output</div>
+      <table class="hw-tbl">
+        <thead><tr><th>Component</th><th>Function</th><th class="val">Power Draw</th></tr></thead>
+        <tbody>
+          <tr><td>LoRa SX1276 (865 MHz)</td><td>GPS packet every 30 s; auto-relays other HARVEST units' packets</td><td class="val">~0.8 mW avg</td></tr>
+          <tr><td>u-blox NEO-M8N GPS</td><td>Feeds lat/lon to LoRa packet; deep-sleep between fixes. Falls back to ID-only if lock lost.</td><td class="val">15 mW track / 1 mW sleep</td></tr>
+          <tr><td>LED Strobe (Morse SOS)</td><td>Red, ···−−−···, ~200 m night visibility. Hold 3 s to activate.</td><td class="val">~15 mW avg (5% duty)</td></tr>
+        </tbody>
+      </table>
+      <div class="hw-note">
+        <strong>GPS caveat:</strong> Under dense rubble, satellite lock may be lost. System automatically transmits device ID + SOS flag only — location accuracy degrades but the distress signal continues.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 7 — STEMMB ════════════════════ -->
+<section class="slide" id="s7">
+  <div class="eyebrow">STEMMB Alignment</div>
+  <div class="s-title">Every pillar. <span class="red">Every domain.</span></div>
+
+  <div class="stemmb ai">
+    <div class="stemmb-card">
+      <div class="stemmb-l">S</div>
+      <div class="stemmb-n">Science</div>
+      <div class="stemmb-d">Seebeck effect, electromagnetic induction, piezoelectric charge generation, photovoltaic conversion — all four physics principles in one device. P-V curve analysis underpins MPPT design.</div>
+    </div>
+    <div class="stemmb-card">
+      <div class="stemmb-l">T</div>
+      <div class="stemmb-n">Technology</div>
+      <div class="stemmb-d">STM32L0 microcontroller, ADP5092 PMIC per channel, LoRa SX1276 (865 MHz), u-blox NEO-M8N GPS, N-FET gating. Off-the-shelf, all verifiable.</div>
+    </div>
+    <div class="stemmb-card">
+      <div class="stemmb-l">E</div>
+      <div class="stemmb-n">Engineering</div>
+      <div class="stemmb-d">Adaptive routing firmware; thermal isolation for Seebeck ΔT; antenna placement for 865 MHz near-body; waterproofing; GPS fallback on lock loss; modular output connector.</div>
+    </div>
+    <div class="stemmb-card">
+      <div class="stemmb-l">M</div>
+      <div class="stemmb-n">Mathematics</div>
+      <div class="stemmb-d">P = V²/R thermoelectric model; Faraday flux for EM output; mesh hop-count attenuation; power budget optimisation across 4 concurrent sources; MPPT sweep algorithm.</div>
+    </div>
+    <div class="stemmb-card">
+      <div class="stemmb-l">M</div>
+      <div class="stemmb-n">Medicine</div>
+      <div class="stemmb-d">72-hr survival window is a documented medical reality — HARVEST directly addresses it. Skin-safe materials, ≤40 g wearable design, Peltier heat monitoring to prevent burns; GPS links to faster medical triage on rescue.</div>
+    </div>
+    <div class="stemmb-card">
+      <div class="stemmb-l">B</div>
+      <div class="stemmb-n">Business</div>
+      <div class="stemmb-d">B2G to NDMA, State SDMAs, UN OCHA. BOM ~₹2,800 · Retail ₹3,499 · B2G bulk ₹2,599. Dashboard SaaS at ₹499/yr. Pilot → NDMA tender → international kit listing.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 8 — IMPACT ════════════════════ -->
+<section class="slide" id="s8">
+  <div class="eyebrow">Target Audience & SDG Alignment</div>
+  <div class="s-title">Built for people with <span class="red">zero</span> infrastructure access.</div>
+
+  <div class="impact-grid ai">
+    <div>
+      <div class="hw-label">Who HARVEST SOS Serves</div>
+      <div class="audience-list">
+        <div class="aud">
+          <div class="aud-i">01</div>
+          <div>
+            <div class="aud-name">Disaster Survivors</div>
+            <div class="aud-d">Trapped under rubble or displaced, phone dead, no cell signal. HARVEST broadcasts continuously — just wear it.</div>
+          </div>
+        </div>
+        <div class="aud">
+          <div class="aud-i">02</div>
+          <div>
+            <div class="aud-name">NDRF / Rescue Teams</div>
+            <div class="aud-d">Teams entering affected zones where radio infrastructure is down. Each unit relays others' signals — building a live rescue map.</div>
+          </div>
+        </div>
+        <div class="aud">
+          <div class="aud-i">03</div>
+          <div>
+            <div class="aud-name">Flood-Prone Rural Communities</div>
+            <div class="aud-d">Assam, Kerala, Odisha — recurring floods, limited connectivity baseline. Pre-distributed by state authorities. Body-powered = no charging access needed.</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);font-style:italic;margin-top:10px;line-height:1.5;">Design insight: Products designed for average users consistently fail in extreme contexts. HARVEST is designed for the hardest case first.</p>
+    </div>
+
+    <div>
+      <div class="hw-label">SDG Alignment</div>
+      <div class="sdg-list">
+        <div class="sdg"><div class="sdg-n">SDG 13 ★ Primary</div><div class="sdg-d">Climate Action — disasters rising with climate change; body-powered SOS eliminates dependence on external charging in grid-down climate events</div></div>
+        <div class="sdg"><div class="sdg-n">SDG 7 ★</div><div class="sdg-d">Clean Energy — demonstrates viable multi-source body energy harvesting for self-sufficient IoT</div></div>
+        <div class="sdg"><div class="sdg-n">SDG 11</div><div class="sdg-d">Sustainable Cities — improves urban disaster response by enabling survivor location without infrastructure</div></div>
+        <div class="sdg"><div class="sdg-n">SDG 2</div><div class="sdg-d">Zero Hunger — reaches farmers and rural populations affected by cyclones and floods, unreachable by conventional emergency comms</div></div>
+        <div class="sdg"><div class="sdg-n">SDG 9</div><div class="sdg-d">Infrastructure — mesh relay builds resilient communication from the ground up, no towers required</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 9 — PROTOTYPE ════════════════════ -->
+<section class="slide" id="s9">
+  <div class="eyebrow">Prototype & Validation</div>
+  <div class="s-title">Three phases. <span class="red">One central experiment.</span></div>
+
+  <div class="phases ai">
+    <div class="phase">
+      <div class="phase-lbl">Phase 1 — Characterisation</div>
+      <div class="phase-title">Source Mapping</div>
+      <ul>
+        <li>Breadboard each source individually to a load resistor</li>
+        <li>Measure raw output in 5 conditions: resting, walking, outdoor sun, indoor, night</li>
+        <li>Build empirical P-V curves for each source</li>
+        <li>Identify which source dominates in which condition</li>
+      </ul>
+      <div class="phase-metric">OUTPUT: Per-source power models and MPP profiles</div>
+    </div>
+
+    <div class="phase focus">
+      <div class="phase-lbl">Phase 2 — Core Experiment ★</div>
+      <div class="phase-title">Mode A vs B vs C</div>
+      <ul>
+        <li>Add STM32L0 + ADP5092 PMICs to the rig</li>
+        <li>Run Mode A, B, and C back-to-back in identical conditions over 4 hours each</li>
+        <li>Log total harvested energy per mode</li>
+        <li>Let the data determine the gain — 10%, 25%, or otherwise</li>
+      </ul>
+      <div class="phase-metric">OUTPUT: Measured % improvement of adaptive over passive</div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-lbl">Phase 3 — Full System</div>
+      <div class="phase-title">Live Demonstration</div>
+      <ul>
+        <li>Full wristband with LoRa SX1276, GPS, and strobe assembled</li>
+        <li>Two-unit mesh relay test: Wearable A → B relay → receiver → dashboard</li>
+        <li>GPS lock time, GPS-loss fallback behaviour, and strobe visibility at 200 m</li>
+      </ul>
+      <div class="phase-metric">TARGET: Signal relay >2 km · GPS lock &lt;5 s · Strobe visible at 200 m night</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 10 — BUSINESS ════════════════════ -->
+<section class="slide" id="s10">
+  <div class="eyebrow">Business Model & Scale</div>
+  <div class="s-title">Government-first. <span class="red">Infrastructure-native.</span></div>
+
+  <div class="bm-wrap ai">
+    <div class="bm-row">
+      <div class="bm-k">Primary Customer</div>
+      <div class="bm-v">NDMA (India), State SDMAs, UN OCHA emergency stockpile — government disaster preparedness procurement</div>
+    </div>
+    <div class="bm-row">
+      <div class="bm-k">Secondary</div>
+      <div class="bm-v">NGOs (Red Cross, SPHERE); industrial safety (mining, construction); trekking/adventure outfitters (bulk kit)</div>
+    </div>
+    <div class="bm-row">
+      <div class="bm-k">Unit Economics</div>
+      <div class="bm-v"><strong>BOM ~₹2,800</strong> · Retail ₹3,499 · B2G bulk (1,000+ units) ₹2,599 · Gross margin ~15–20% at scale</div>
+    </div>
+    <div class="bm-row">
+      <div class="bm-k">Revenue Model</div>
+      <div class="bm-v">Hardware unit sales + optional ₹499/yr dashboard subscription for rescue coordination centres (SaaS layer)</div>
+    </div>
+    <div class="bm-row">
+      <div class="bm-k">Scale Pathway</div>
+      <div class="bm-v">Pilot: 500 units → Odisha SDMA (flood season) → Year 2: NDMA tender → Year 3: WHO/OCHA international emergency kit listing</div>
+    </div>
+    <div class="bm-row">
+      <div class="bm-k">Modular Future</div>
+      <div class="bm-v">Same base generation unit — swap SOS output module for agricultural sensor or rural lighting module. One platform, multiple markets, without hardware redesign.</div>
+    </div>
+
+    <div class="market-callout">
+      <div class="market-big">₹2,400 Cr</div>
+      <div class="market-desc">India's annual disaster preparedness equipment procurement (NDMA 2024 est.). A 0.5% share represents <strong>~₹12 Cr revenue</strong> from government procurement alone, before NGO and international channels.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ SLIDE 11 — CLOSING ════════════════════ -->
+<section class="slide" id="s11">
+  <div class="close-title">
+    WHEN THE GRID<br>
+    GOES DOWN,<br>
+    THE <span class="red">BODY</span><br>
+    POWERS RESCUE.
+  </div>
+  <div class="close-sub">HARVEST SOS — Imperial College STEMathon India 2026</div>
+
+  <div class="close-facts">
+    <div class="cf"><div class="cf-n">4</div><div class="cf-l">Energy Sources</div></div>
+    <div class="cf"><div class="cf-n">3</div><div class="cf-l">Optimisation Layers</div></div>
+    <div class="cf"><div class="cf-n">15 km+</div><div class="cf-l">Est. Range per Hop</div></div>
+    <div class="cf"><div class="cf-n">₹3,499</div><div class="cf-l">Target Retail</div></div>
+    <div class="cf"><div class="cf-n">SDG 13</div><div class="cf-l">Primary Goal</div></div>
+  </div>
+
+  <p class="est-note">All performance figures are estimated/target values pending experimental verification in prototype phases 1–3.</p>
+</section>
+
+<script>
+// ── Slide registry ──────────────────────────────────────────────────────────
+const slideIds = ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+const slides = slideIds.map(id => document.getElementById(id));
+const N = slides.length;
+
+// ── Nav dots ────────────────────────────────────────────────────────────────
+const dotsEl = document.getElementById('navdots');
+const dots = slides.map((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'nd';
+  d.title = `Slide ${i+1}`;
+  d.addEventListener('click', () => slides[i].scrollIntoView({behavior:'smooth'}));
+  dotsEl.appendChild(d);
+  return d;
+});
+
+// ── Intersection observer ────────────────────────────────────────────────────
+let currentIdx = 0;
+
+const prog = document.getElementById('prog');
+
+function updateSlide(idx) {
+  if (idx === currentIdx && dots[idx].classList.contains('on')) return;
+  currentIdx = idx;
+  dots.forEach((d,i) => d.classList.toggle('on', i===idx));
+  prog.style.width = `${(idx/(N-1))*100}%`;
+}
+
+const slideObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.intersectionRatio > 0.5) {
+      updateSlide(slides.indexOf(e.target));
+    }
+  });
+}, { threshold: 0.5 });
+
+slides.forEach(s => slideObserver.observe(s));
+
+// ── Animate-in observer ──────────────────────────────────────────────────────
+const aiObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('vis');
+      aiObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.ai').forEach(el => aiObserver.observe(el));
+
+// ── Keyboard nav ─────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    const next = Math.min(currentIdx + 1, N - 1);
+    slides[next].scrollIntoView({behavior:'smooth'});
+  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    const prev = Math.max(currentIdx - 1, 0);
+    slides[prev].scrollIntoView({behavior:'smooth'});
+  }
+});
+
+// ── Live clock ───────────────────────────────────────────────────────────────
+const clockEl = document.getElementById('clock');
+function tick() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  clockEl.textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())} IST`;
+}
+tick();
+setInterval(tick, 1000);
+
+// ── Counter animation ────────────────────────────────────────────────────────
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target, 10);
+  const suffix = el.dataset.suffix || '';
+  const dur = 1400;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(ease * target);
+    el.textContent = val.toLocaleString('en-IN') + suffix;
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting && e.target.dataset.target) {
+      animateCounter(e.target);
+      counterObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+
+// Init first slide
+updateSlide(0);
+</script>
